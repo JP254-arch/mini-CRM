@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import leadRoutes from "./routes/leadRoutes.js";
+import noteRoutes from "./routes/noteRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 
 dotenv.config();
@@ -18,7 +20,7 @@ app.get("/", (req, res) => {
   res.send("CRM API Running...");
 });
 app.use("/api/leads", leadRoutes);
-
+app.use("/api/leads", noteRoutes);
 
 // Connect DB
 mongoose.connect(process.env.MONGO_URI)
@@ -29,3 +31,6 @@ mongoose.connect(process.env.MONGO_URI)
     );
   })
   .catch(err => console.log(err));
+
+  // Auth routes
+app.use("/api/auth", authRoutes);
