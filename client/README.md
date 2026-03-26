@@ -1,73 +1,98 @@
-# React + TypeScript + Vite
+#  Client Lead Management System (Mini CRM)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack **Client Lead Management System (Mini CRM)** built using the MERN stack principles.  
+This application helps businesses track, manage, and convert leads generated from website contact forms.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+##  Overview
 
-## React Compiler
+This project simulates a real-world CRM used by agencies, freelancers, and startups to:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Store incoming leads
+- Track their progress
+- Manage follow-ups
+- Convert leads into clients
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+##  Features
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Core Features
+-  Secure Admin Authentication (JWT)
+-  Lead Management (Create, Read, Update, Delete)
+-  Lead Status Tracking (New → Contacted → Converted)
+-  Notes & Follow-ups per Lead
+-  Live Search & Filtering
+-  Dashboard with analytics (conversion rate, loss rate)
+-  Lead trends visualization (charts)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Tech Stack
+
+### Frontend
+- React (Vite + TypeScript)
+- Axios
+- React Router
+- Recharts (for analytics)
+
+### Backend
+- Node.js
+- Express.js
+- JWT Authentication
+- bcrypt (password hashing)
+
+### Database
+- MongoDB (Mongoose)
+
+---
+
+## Project Structure
+mini-crm/
+│
+├── client/ # React frontend
+│ ├── src/
+│ │ ├── pages/
+│ │ ├── components/
+│ │ ├── api/
+│
+├── server/ # Node.js backend
+│ ├── models/
+│ ├── controllers/
+│ ├── routes/
+│ ├── middleware/
+│
+└── README.md
+
+
+---
+
+##  Installation & Setup
+
+### Clone the repository
+
+```bash
+git clone https://github.com/your-username/mini-crm.git
+cd mini-crm
+
 ```
+## BACKEND SETUP
+cd server
+npm install
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+# Create a .env file
+PORT=5000
+MONGO_URI= your database name( mini-crm)
+JWT_SECRET=Your_secret_key
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Run Backend
+npm run dev
+
+
+## FRONTEND SETUP
+cd client
+npm install
+npm run dev
+
