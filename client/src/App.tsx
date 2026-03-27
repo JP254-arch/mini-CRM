@@ -26,7 +26,7 @@ function Navbar() {
 
   const linkStyle = ({ isActive }: { isActive: boolean }) => ({
     textDecoration: "none",
-    color: isActive ? "#007bff" : "#333",
+    color: isActive ? "#00ff11" : "#333",
     fontWeight: isActive ? "bold" : "normal"
   });
 
@@ -36,15 +36,15 @@ function Navbar() {
         position: "sticky",
         top: 0,
         zIndex: 1000,
-        background: "#fff",
+        background: "#fafbfa",
         padding: "12px 20px",
-        borderBottom: "1px solid #eee",
+        borderBottom: "1px solid #25b525",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center"
       }}
     >
-      {/* 🔹 Left */}
+      {/* Left */}
       <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
         <h3 style={{ margin: 0 }}>Mini CRM</h3>
 
@@ -57,7 +57,7 @@ function Navbar() {
         </NavLink>
       </div>
 
-      {/* 🔹 Right */}
+      {/*  Right */}
       <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
         <NavLink
           to="/leads/new"
@@ -77,8 +77,8 @@ function Navbar() {
           style={{
             padding: "6px 12px",
             borderRadius: "6px",
-            border: "1px solid #ccc",
-            background: "#fff",
+            border: "1px solid #d91c1c",
+            background: "#d04a28",
             cursor: "pointer"
           }}
         >

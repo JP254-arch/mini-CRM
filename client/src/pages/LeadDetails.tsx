@@ -26,7 +26,6 @@ export default function LeadDetails() {
   const [newNote, setNewNote] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // 🔹 Fetch lead
   const fetchLead = async () => {
     try {
       const res = await API.get(`/leads/${id}`);
@@ -36,7 +35,6 @@ export default function LeadDetails() {
     }
   };
 
-  // 🔹 Fetch notes
   const fetchNotes = async () => {
     try {
       const res = await API.get(`/leads/${id}/notes`);
@@ -56,7 +54,6 @@ export default function LeadDetails() {
     loadData();
   }, [id]);
 
-  // 🔹 Add note
   const handleAddNote = async () => {
     if (!newNote.trim()) {
       toast.error("Note cannot be empty");
@@ -64,10 +61,7 @@ export default function LeadDetails() {
     }
 
     try {
-      await API.post(`/leads/${id}/notes`, {
-        content: newNote
-      });
-
+      await API.post(`/leads/${id}/notes`, { content: newNote });
       setNewNote("");
       fetchNotes();
       toast.success("Note added");
@@ -76,125 +70,85 @@ export default function LeadDetails() {
     }
   };
 
-  // 🔹 Delete lead
   const handleDelete = async () => {
     if (!window.confirm("Delete this lead?")) return;
 
     try {
       await API.delete(`/leads/${id}`);
-      toast.success("Lead deleted successfully");
+      toast.success("Lead deleted");
       navigate("/leads");
     } catch {
       toast.error("Failed to delete lead");
     }
   };
 
-  if (loading) return <p style={{ padding: "20px" }}>Loading...</p>;
-  if (!lead) return <p style={{ padding: "20px" }}>Lead not found</p>;
+  if (loading) return <div style={loadingStyle}>Loading...</div>;
+  if (!lead) return <div style={loadingStyle}>Lead not found</div>;
 
   return (
-    <div
-      style={{
-        padding: "20px",
-        maxWidth: "800px",
-        margin: "0 auto"
-      }}
-    >
-      {/* 🔹 Header */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px"
-        }}
-      >
-        <h2>{lead.name}</h2>
+    <div style={container}>
+      {/* HEADER */}
+      <div style={header}>
+        <div>
+          <h2 style={{ margin: 0 }}>{lead.name}</h2>
+          <p style={{ margin: 0, color: "#666" }}>{lead.email}</p>
+        </div>
 
-        <div style={{ display: "flex", gap: "10px" }}>
-          <button onClick={() => navigate(`/leads/${id}/edit`)}>
+        <div style={actionGroup}>
+          <button onClick={() => navigate(`/leads/${id}/edit`)} style={btnPrimary}>
             Edit
           </button>
-
-          <button
-            onClick={handleDelete}
-            style={{ background: "#dc3545", color: "#fff" }}
-          >
+          <button onClick={handleDelete} style={btnDanger}>
             Delete
           </button>
         </div>
       </div>
 
-      {/* 🔹 Lead Info Card */}
-      <div
-        style={{
-          padding: "20px",
-          border: "1px solid #eee",
-          borderRadius: "10px",
-          marginBottom: "20px",
-          background: "#fff"
-        }}
-      >
-        <p><strong>Email:</strong> {lead.email}</p>
-        <p><strong>Phone:</strong> {lead.phone || "N/A"}</p>
-        <p><strong>Status:</strong> {lead.status}</p>
+      {/* INFO GRID */}
+      <div style={grid}>
+        <div style={card}>
+          <h4>📧 Contact</h4>
+          <p><strong>Email:</strong> {lead.email}</p>
+          <p><strong>Phone:</strong> {lead.phone || "—"}</p>
+        </div>
+
+        <div style={card}>
+          <h4>📊 Status</h4>
+          <span style={badge(lead.status)}>{lead.status.toUpperCase()}</span>
+        </div>
+
+        <div style={card}>
+          <h4>🧾 Lead ID</h4>
+          <p style={{ fontSize: "12px", color: "#888" }}>{lead._id}</p>
+        </div>
       </div>
 
-      {/* 🔹 Notes Section */}
-      <div
-        style={{
-          padding: "20px",
-          border: "1px solid #eee",
-          borderRadius: "10px",
-          background: "#fff"
-        }}
-      >
-        <h3>Notes</h3>
+      {/* NOTES */}
+      <div style={section}>
+        <h3 style={{ marginBottom: "12px" }}>Notes</h3>
 
-        {/* Add note */}
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            marginBottom: "15px"
-          }}
-        >
+        <div style={noteInputWrap}>
           <input
-            placeholder="Add a note..."
+            placeholder="Write a note..."
             value={newNote}
             onChange={(e) => setNewNote(e.target.value)}
-            style={{
-              flex: 1,
-              padding: "10px",
-              borderRadius: "6px",
-              border: "1px solid #ccc"
-            }}
+            style={input}
           />
-
-          <button onClick={handleAddNote}>
-            Add
+          <button onClick={handleAddNote} style={btnAccent}>
+            Add Note
           </button>
         </div>
 
-        {/* Notes list */}
         {notes.length === 0 ? (
-          <p>No notes yet.</p>
+          <p style={{ color: "#888" }}>No notes yet.</p>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <div style={notesList}>
             {notes.map((note) => (
-              <div
-                key={note._id}
-                style={{
-                  padding: "10px",
-                  border: "1px solid #eee",
-                  borderRadius: "6px",
-                  background: "#fafafa"
-                }}
-              >
-                <p>{note.content}</p>
-                <small style={{ color: "#666" }}>
+              <div key={note._id} style={noteCard}>
+                <p style={{ marginBottom: "6px" }}>{note.content}</p>
+                <span style={timestamp}>
                   {new Date(note.createdAt).toLocaleString()}
-                </small>
+                </span>
               </div>
             ))}
           </div>
@@ -203,3 +157,125 @@ export default function LeadDetails() {
     </div>
   );
 }
+
+/* STYLES */
+
+const container: React.CSSProperties = {
+  padding: "24px",
+  maxWidth: "900px",
+  margin: "0 auto",
+  fontFamily: "Segoe UI, Arial, sans-serif"
+};
+
+const loadingStyle: React.CSSProperties = {
+  padding: "20px",
+  color: "#666"
+};
+
+const header: React.CSSProperties = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: "20px"
+};
+
+const actionGroup: React.CSSProperties = {
+  display: "flex",
+  gap: "10px"
+};
+
+const grid: React.CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+  gap: "16px",
+  marginBottom: "24px"
+};
+
+const card: React.CSSProperties = {
+  padding: "16px",
+  borderRadius: "14px",
+  background: "#ffffff",
+  border: "1px solid #eee",
+  boxShadow: "0 4px 10px rgba(0,0,0,0.05)"
+};
+
+const section: React.CSSProperties = {
+  padding: "20px",
+  borderRadius: "14px",
+  background: "#fff",
+  border: "1px solid #eee"
+};
+
+const noteInputWrap: React.CSSProperties = {
+  display: "flex",
+  gap: "10px",
+  marginBottom: "15px"
+};
+
+const input: React.CSSProperties = {
+  flex: 1,
+  padding: "10px 12px",
+  borderRadius: "10px",
+  border: "1px solid #ddd",
+  outline: "none"
+};
+
+const notesList: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "12px"
+};
+
+const noteCard: React.CSSProperties = {
+  padding: "12px",
+  borderRadius: "10px",
+  background: "#f8fafc",
+  border: "1px solid #e5e7eb"
+};
+
+const timestamp: React.CSSProperties = {
+  fontSize: "12px",
+  color: "#888"
+};
+
+const btnPrimary: React.CSSProperties = {
+  padding: "8px 14px",
+  borderRadius: "10px",
+  border: "none",
+  background: "#6366f1",
+  color: "#fff",
+  cursor: "pointer"
+};
+
+const btnDanger: React.CSSProperties = {
+  padding: "8px 14px",
+  borderRadius: "10px",
+  border: "none",
+  background: "#ef4444",
+  color: "#fff",
+  cursor: "pointer"
+};
+
+const btnAccent: React.CSSProperties = {
+  padding: "10px 14px",
+  borderRadius: "10px",
+  border: "none",
+  background: "#22c55e",
+  color: "#fff",
+  cursor: "pointer"
+};
+
+const badge = (status: string): React.CSSProperties => ({
+  display: "inline-block",
+  padding: "6px 10px",
+  borderRadius: "999px",
+  fontSize: "12px",
+  fontWeight: 600,
+  color: "#fff",
+  background:
+    status === "new"
+      ? "#3b82f6"
+      : status === "contacted"
+      ? "#f59e0b"
+      : "#22c55e"
+});

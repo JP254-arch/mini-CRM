@@ -19,7 +19,6 @@ export default function Leads() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  // ✅ Bulk select
   const [selected, setSelected] = useState<string[]>([]);
 
   const navigate = useNavigate();
@@ -29,7 +28,7 @@ export default function Leads() {
       setLoading(true);
       const res = await API.get("/leads");
       setLeads(res.data);
-    } catch (error) {
+    } catch {
       toast.error("Failed to fetch leads");
     } finally {
       setLoading(false);
@@ -58,7 +57,6 @@ export default function Leads() {
     }
   };
 
-  // ✅ Select toggle
   const toggleSelect = (id: string) => {
     setSelected((prev) =>
       prev.includes(id)
@@ -67,7 +65,6 @@ export default function Leads() {
     );
   };
 
-  // ✅ Delete selected
   const deleteSelected = async () => {
     if (selected.length === 0) {
       toast.error("No leads selected");
@@ -84,7 +81,6 @@ export default function Leads() {
     }
   };
 
-  // 🔍 Filtering
   const filteredLeads = leads.filter((lead) => {
     const matchesSearch =
       lead.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -97,78 +93,49 @@ export default function Leads() {
     return matchesSearch && matchesStatus;
   });
 
-  // 📊 Progress stats
-  const now = new Date();
-
-  const weekly = leads.filter(
-    (l) =>
-      l.createdAt &&
-      new Date(l.createdAt) >
-        new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-  ).length;
-
-  const monthly = leads.filter(
-    (l) =>
-      l.createdAt &&
-      new Date(l.createdAt) >
-        new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-  ).length;
-
-  const yearly = leads.filter(
-    (l) =>
-      l.createdAt &&
-      new Date(l.createdAt) >
-        new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000)
-  ).length;
-
-  if (loading) return <p style={{ padding: "20px" }}>Loading leads...</p>;
+  if (loading) {
+    return <p style={{ padding: "20px", color: "#666" }}>Loading leads...</p>;
+  }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Leads</h2>
+    <div style={{ padding: "24px", fontFamily: "Arial, sans-serif" }}>
+      <h2 style={{ marginBottom: "16px" }}>Leads</h2>
 
-      {/* 📊 Stats */}
-      <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
-        <div>📅 Weekly: {weekly}</div>
-        <div>📆 Monthly: {monthly}</div>
-        <div>📊 Yearly: {yearly}</div>
-      </div>
-
-      {/* 🔹 Action Bar */}
+      {/* Action Bar */}
       <div
         style={{
           display: "flex",
-          gap: "10px",
-          marginBottom: "15px",
-          flexWrap: "wrap"
+          gap: "12px",
+          flexWrap: "wrap",
+          marginBottom: "20px",
+          alignItems: "center"
         }}
       >
-        <button onClick={() => navigate("/leads/new")}>
+        <button
+          onClick={() => navigate("/leads/new")}
+          style={btnPrimary}
+        >
           + Add Lead
         </button>
 
-        <button onClick={deleteSelected}>
+        <button
+          onClick={deleteSelected}
+          style={btnDanger}
+        >
           🗑 Delete Selected
         </button>
 
-        {/* 🔍 Search */}
         <input
-          placeholder="Search by name, email, source..."
+          placeholder="Search leads..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            padding: "8px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-            minWidth: "200px"
-          }}
+          style={inputStyle}
         />
 
-        {/* 🎯 Filter */}
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          style={{ padding: "8px", borderRadius: "6px" }}
+          style={selectStyle}
         >
           <option value="all">All</option>
           <option value="new">New</option>
@@ -177,19 +144,13 @@ export default function Leads() {
         </select>
       </div>
 
-      {/* 📋 Table */}
+      {/* Table */}
       {filteredLeads.length === 0 ? (
-        <p>No matching leads.</p>
+        <p style={{ color: "#e32222" }}>No matching leads.</p>
       ) : (
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            background: "#fff"
-          }}
-        >
+        <table style={tableStyle}>
           <thead>
-            <tr style={{ background: "#f0f0f0" }}>
+            <tr style={{ background: "#5c7dbd" }}>
               <th></th>
               <th>Name</th>
               <th>Email</th>
@@ -203,9 +164,8 @@ export default function Leads() {
               <tr
                 key={lead._id}
                 onClick={() => navigate(`/leads/${lead._id}`)}
-                style={{ cursor: "pointer", borderBottom: "1px solid #eee" }}
+                style={rowStyle}
               >
-                {/* ✅ Checkbox */}
                 <td onClick={(e) => e.stopPropagation()}>
                   <input
                     type="checkbox"
@@ -224,6 +184,7 @@ export default function Leads() {
                     onChange={(e) =>
                       updateStatus(lead._id, e.target.value)
                     }
+                    style={selectStyle}
                   >
                     <option value="new">New</option>
                     <option value="contacted">Contacted</option>
@@ -238,3 +199,51 @@ export default function Leads() {
     </div>
   );
 }
+
+/* Styles */
+
+const btnPrimary: React.CSSProperties = {
+  padding: "8px 14px",
+  borderRadius: "10px",
+  border: "none",
+  background: "#4f46e5",
+  color: "#fff",
+  cursor: "pointer"
+};
+
+const btnDanger: React.CSSProperties = {
+  padding: "8px 14px",
+  borderRadius: "10px",
+  border: "none",
+  background: "#ef4444",
+  color: "#ffffff",
+  cursor: "pointer"
+};
+
+const inputStyle: React.CSSProperties = {
+  padding: "8px 12px",
+  borderRadius: "10px",
+  border: "1px solid #43a827",
+  outline: "none"
+};
+
+const selectStyle: React.CSSProperties = {
+  padding: "8px 10px",
+  borderRadius: "10px",
+  border: "1px solid #eb6a6a",
+  background: "#968874"
+};
+
+const tableStyle: React.CSSProperties = {
+  width: "100%",
+  borderCollapse: "collapse",
+  background: "#fff",
+  borderRadius: "10px",
+  overflow: "hidden"
+};
+
+const rowStyle: React.CSSProperties = {
+  borderBottom: "1px solid #948e8e",
+  cursor: "pointer",
+  transition: "background 0.2s"
+};

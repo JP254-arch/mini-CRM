@@ -40,59 +40,62 @@ export default function Login() {
   };
 
   return (
-    <div
-      style={{
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        background: "#f5f5f5"
-      }}
-    >
+    <>
+      <h1>Admin Login</h1>
       <div
         style={{
-          padding: "30px",
-          width: "300px",
-          background: "#fff",
-          borderRadius: "10px",
-          boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+          height: "100vh",
           display: "flex",
-          flexDirection: "column",
-          gap: "10px"
+          justifyContent: "center",
+          alignItems: "center",
+          background: "#f5f5f5"
         }}
       >
-        <h2 style={{ textAlign: "center" }}>Admin Login</h2>
-
-        <input
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{ padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
-        />
-
-        <input
-          placeholder="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{ padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
-        />
-
-        <button
-          onClick={handleLogin}
-          disabled={loading}
-          style={{
-            padding: "10px",
-            borderRadius: "5px",
-            border: "none",
-            background: loading ? "#999" : "#007bff",
-            color: "#fff",
-            cursor: loading ? "not-allowed" : "pointer"
+        <div
+            style={{
+            padding: "30px",
+            width: "300px",
+            background: "#e1baba",
+            borderRadius: "10px",
+            boxShadow: "0 4px 10px rgba(219, 21, 21, 0.92)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px"
           }}
         >
-          {loading ? "Logging in..." : "Login"}
-        </button>
+          <h2 style={{ textAlign: "center" }}>Admin Login</h2>
+
+          <input
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{ padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
+          />
+
+          <input
+            placeholder="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{ padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
+          />
+
+          <button
+            onClick={handleLogin}
+            disabled={loading}
+            style={{
+              padding: "10px",
+              borderRadius: "5px",
+              border: "none",
+              background: loading ? "#999" : "#007bff",
+              color: "#fff",
+              cursor: loading ? "not-allowed" : "pointer"
+            }}
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -34,7 +34,7 @@ export default function Dashboard() {
     fetchLeads();
   }, []);
 
-  // 📅 Filter by date range
+  //  Filter by date range
   const now = new Date();
 
   const filteredLeads = leads.filter((lead) => {
@@ -52,7 +52,7 @@ export default function Dashboard() {
     return withinRange && matchesStatus;
   });
 
-  // 📊 Metrics
+  //  Metrics
   const total = filteredLeads.length;
   const converted = filteredLeads.filter(l => l.status === "converted").length;
   const contacted = filteredLeads.filter(l => l.status === "contacted").length;
@@ -66,7 +66,7 @@ export default function Dashboard() {
     ? (100 - Number(conversionRate)).toFixed(1)
     : "0";
 
-  // 📈 Group for chart
+  // Group for chart
   const grouped = filteredLeads.reduce((acc: any, lead) => {
     const date = new Date(lead.createdAt).toLocaleDateString();
 
@@ -87,13 +87,16 @@ export default function Dashboard() {
     <div style={{ padding: "20px" }}>
       <h2>Dashboard</h2>
 
-      {/* 🔹 Filters */}
+      {/*  Filters */}
       <div
         style={{
           display: "flex",
           gap: "10px",
           marginBottom: "20px",
-          flexWrap: "wrap"
+          flexWrap: "wrap",
+          border: "1px solid #da7b7b",
+          padding: "15px",
+          borderRadius: "40px",
         }}
       >
         <select
@@ -117,7 +120,7 @@ export default function Dashboard() {
         </select>
       </div>
 
-      {/* 🔹 Metrics */}
+      {/*  Metrics */}
       <div
         style={{
           display: "flex",
@@ -132,10 +135,10 @@ export default function Dashboard() {
         <Card title="Loss Rate" value={`${lossRate}%`} />
       </div>
 
-      {/* 🔹 Chart */}
+      {/*  Chart */}
       <div
         style={{
-          background: "#fff",
+          background: "#ffffff",
           padding: "20px",
           borderRadius: "10px",
           marginBottom: "20px"
@@ -152,10 +155,10 @@ export default function Dashboard() {
         </LineChart>
       </div>
 
-      {/* 🔹 Breakdown */}
+      {/*  Breakdown */}
       <div
         style={{
-          background: "#fff",
+          background: "#f0e8e8",
           padding: "20px",
           borderRadius: "10px"
         }}
@@ -186,7 +189,7 @@ export default function Dashboard() {
         </table>
       </div>
 
-      {/* 🔹 Insight */}
+      {/*  Insight */}
       <div style={{ marginTop: "20px" }}>
         <h3>Performance Insight</h3>
 
@@ -202,7 +205,7 @@ export default function Dashboard() {
   );
 }
 
-// 🔹 Reusable Card
+
 function Card({ title, value }: { title: string; value: any }) {
   return (
     <div
@@ -212,7 +215,7 @@ function Card({ title, value }: { title: string; value: any }) {
         padding: "15px",
         background: "#fff",
         borderRadius: "10px",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.05)"
+        boxShadow: "0 2px 6px rgb(202, 32, 32)"
       }}
     >
       <h4>{title}</h4>
