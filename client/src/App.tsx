@@ -1,46 +1,104 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  NavLink,
+  useLocation
+} from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Leads from "./pages/Leads";
-import LeadDetails from "./pages/LeadDetails"; // fixed path
+import LeadDetails from "./pages/LeadDetails";
 import CreateLead from "./pages/CreateLead";
 import ProtectedRoute from "./components/ProtectedRoute";
+import toast from "react-hot-toast";
 
-function App() {
-  const token = localStorage.getItem("token");
+function Navbar() {
+  const location = useLocation();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    window.location.href = "/";
+    toast.success("Logged out successfully");
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 800);
   };
 
+  const linkStyle = ({ isActive }: { isActive: boolean }) => ({
+    textDecoration: "none",
+    color: isActive ? "#007bff" : "#333",
+    fontWeight: isActive ? "bold" : "normal"
+  });
+
   return (
-    <BrowserRouter>
-      {/* Show navbar ONLY if logged in */}
-      {token && (
-        <nav
+    <nav
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 1000,
+        background: "#fff",
+        padding: "12px 20px",
+        borderBottom: "1px solid #eee",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center"
+      }}
+    >
+      {/* 🔹 Left */}
+      <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+        <h3 style={{ margin: 0 }}>Mini CRM</h3>
+
+        <NavLink to="/dashboard" style={linkStyle}>
+          Dashboard
+        </NavLink>
+
+        <NavLink to="/leads" style={linkStyle}>
+          Leads
+        </NavLink>
+      </div>
+
+      {/* 🔹 Right */}
+      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+        <NavLink
+          to="/leads/new"
           style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "10px 20px",
-            borderBottom: "1px solid #ccc",
-            marginBottom: "20px"
+            padding: "6px 12px",
+            background: "#007bff",
+            color: "#fff",
+            borderRadius: "6px",
+            textDecoration: "none"
           }}
         >
-          <div style={{ display: "flex", gap: "15px" }}>
-            <Link to="/dashboard">Dashboard</Link>
-            <Link to="/leads">Leads</Link>
-          </div>
+          + New Lead
+        </NavLink>
 
-          <button onClick={handleLogout}>Logout</button>
-        </nav>
-      )}
+        <button
+          onClick={handleLogout}
+          style={{
+            padding: "6px 12px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+            background: "#fff",
+            cursor: "pointer"
+          }}
+        >
+          Logout
+        </button>
+      </div>
+    </nav>
+  );
+}
+
+function AppWrapper() {
+  const token = localStorage.getItem("token");
+
+  return (
+    <>
+      {token && <Navbar />}
 
       <Routes>
         <Route path="/" element={<Login />} />
 
-        {/* Protected routes */}
         <Route
           path="/dashboard"
           element={
@@ -76,9 +134,24 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/leads/:id/edit"
+          element={
+            <ProtectedRoute>
+              <CreateLead />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-    </BrowserRouter>
+    </>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppWrapper />
+    </BrowserRouter>
+  );
+}

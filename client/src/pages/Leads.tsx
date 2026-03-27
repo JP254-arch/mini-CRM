@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import API from "../api/axios";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 interface Lead {
   _id: string;
@@ -8,15 +9,18 @@ interface Lead {
   email: string;
   source: string;
   status: "new" | "contacted" | "converted";
+  createdAt?: string;
 }
 
 export default function Leads() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔍 NEW STATES
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  // ✅ Bulk select
+  const [selected, setSelected] = useState<string[]>([]);
 
   const navigate = useNavigate();
 
@@ -26,7 +30,7 @@ export default function Leads() {
       const res = await API.get("/leads");
       setLeads(res.data);
     } catch (error) {
-      console.error("Error fetching leads:", error);
+      toast.error("Failed to fetch leads");
     } finally {
       setLoading(false);
     }
@@ -40,7 +44,6 @@ export default function Leads() {
     try {
       await API.put(`/leads/${id}`, { status });
 
-      // Optimistic update
       setLeads((prev) =>
         prev.map((lead) =>
           lead._id === id
@@ -48,12 +51,40 @@ export default function Leads() {
             : lead
         )
       );
-    } catch (error) {
-      console.error("Error updating status:", error);
+
+      toast.success("Status updated");
+    } catch {
+      toast.error("Failed to update status");
     }
   };
 
-  // 🔍 LIVE FILTER LOGIC
+  // ✅ Select toggle
+  const toggleSelect = (id: string) => {
+    setSelected((prev) =>
+      prev.includes(id)
+        ? prev.filter((i) => i !== id)
+        : [...prev, id]
+    );
+  };
+
+  // ✅ Delete selected
+  const deleteSelected = async () => {
+    if (selected.length === 0) {
+      toast.error("No leads selected");
+      return;
+    }
+
+    try {
+      await Promise.all(selected.map((id) => API.delete(`/leads/${id}`)));
+      toast.success("Selected leads deleted");
+      setSelected([]);
+      fetchLeads();
+    } catch {
+      toast.error("Failed to delete leads");
+    }
+  };
+
+  // 🔍 Filtering
   const filteredLeads = leads.filter((lead) => {
     const matchesSearch =
       lead.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -66,29 +97,78 @@ export default function Leads() {
     return matchesSearch && matchesStatus;
   });
 
+  // 📊 Progress stats
+  const now = new Date();
+
+  const weekly = leads.filter(
+    (l) =>
+      l.createdAt &&
+      new Date(l.createdAt) >
+        new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+  ).length;
+
+  const monthly = leads.filter(
+    (l) =>
+      l.createdAt &&
+      new Date(l.createdAt) >
+        new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+  ).length;
+
+  const yearly = leads.filter(
+    (l) =>
+      l.createdAt &&
+      new Date(l.createdAt) >
+        new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000)
+  ).length;
+
   if (loading) return <p style={{ padding: "20px" }}>Loading leads...</p>;
 
   return (
     <div style={{ padding: "20px" }}>
       <h2>Leads</h2>
 
-      {/* 🔹 ACTION BAR */}
-      <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
+      {/* 📊 Stats */}
+      <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
+        <div>📅 Weekly: {weekly}</div>
+        <div>📆 Monthly: {monthly}</div>
+        <div>📊 Yearly: {yearly}</div>
+      </div>
+
+      {/* 🔹 Action Bar */}
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          marginBottom: "15px",
+          flexWrap: "wrap"
+        }}
+      >
         <button onClick={() => navigate("/leads/new")}>
           + Add Lead
         </button>
 
+        <button onClick={deleteSelected}>
+          🗑 Delete Selected
+        </button>
+
         {/* 🔍 Search */}
         <input
-          placeholder="Search leads..."
+          placeholder="Search by name, email, source..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          style={{
+            padding: "8px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+            minWidth: "200px"
+          }}
         />
 
-        {/* 🎯 Status Filter */}
+        {/* 🎯 Filter */}
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
+          style={{ padding: "8px", borderRadius: "6px" }}
         >
           <option value="all">All</option>
           <option value="new">New</option>
@@ -97,16 +177,20 @@ export default function Leads() {
         </select>
       </div>
 
+      {/* 📋 Table */}
       {filteredLeads.length === 0 ? (
         <p>No matching leads.</p>
       ) : (
         <table
-          border={1}
-          cellPadding={10}
-          style={{ width: "100%" }}
+          style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            background: "#fff"
+          }}
         >
           <thead>
-            <tr>
+            <tr style={{ background: "#f0f0f0" }}>
+              <th></th>
               <th>Name</th>
               <th>Email</th>
               <th>Source</th>
@@ -119,8 +203,17 @@ export default function Leads() {
               <tr
                 key={lead._id}
                 onClick={() => navigate(`/leads/${lead._id}`)}
-                style={{ cursor: "pointer" }}
+                style={{ cursor: "pointer", borderBottom: "1px solid #eee" }}
               >
+                {/* ✅ Checkbox */}
+                <td onClick={(e) => e.stopPropagation()}>
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(lead._id)}
+                    onChange={() => toggleSelect(lead._id)}
+                  />
+                </td>
+
                 <td>{lead.name}</td>
                 <td>{lead.email}</td>
                 <td>{lead.source}</td>
