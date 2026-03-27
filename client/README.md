@@ -73,7 +73,7 @@ mini-crm/
 ### Clone the repository
 
 ```bash
-git clone https://github.com/your-username/mini-crm.git
+git clone https://github.com/JP254-arch/mini-CRM.git
 cd mini-crm
 
 ```

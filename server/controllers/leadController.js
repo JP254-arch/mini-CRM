@@ -32,7 +32,7 @@ export const getLeads = async (req, res) => {
   }
 };
 
-// ✅ GET single lead (FIX for your error)
+//  GET single lead (FIX for your error)
 export const getLead = async (req, res) => {
   try {
     const lead = await Lead.findById(req.params.id);
